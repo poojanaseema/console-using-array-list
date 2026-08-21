@@ -1,0 +1,228 @@
+import java.util.HashMap;
+import java.util.Scanner;
+
+// Abstract class
+abstract class BankAccount {
+    protected int accountNumber;
+    protected String name;
+    protected double balance;
+
+    public BankAccount(int accountNumber, String name, double balance) {
+        this.accountNumber = accountNumber;
+        this.name = name;
+        this.balance = balance;
+    }
+
+    public abstract void accountType();
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            System.out.println("Deposit successful.");
+        } else {
+            System.out.println("Invalid amount.");
+        }
+    }
+
+    public void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            System.out.println("Withdrawal successful.");
+        } else if (amount > balance) {
+            System.out.println("Insufficient balance.");
+        } else {
+            System.out.println("Invalid amount.");
+        }
+    }
+
+    public void display() {
+        System.out.println("Account Number : " + accountNumber);
+        System.out.println("Account Holder : " + name);
+        System.out.println("Balance        : Rs. " + balance);
+        accountType();
+        System.out.println("----------------------------");
+    }
+}
+
+// Savings Account class
+class SavingsAccount extends BankAccount {
+
+    public SavingsAccount(int accountNumber, String name, double balance) {
+        super(accountNumber, name, balance);
+    }
+
+    @Override
+    public void accountType() {
+        System.out.println("Account Type   : Savings Account");
+    }
+}
+
+// Main class
+public class BankingManagementSystem {
+
+    // HashMap: Account Number -> Bank Account
+    static HashMap<Integer, BankAccount> accounts = new HashMap<>();
+
+    static Scanner sc = new Scanner(System.in);
+
+    // Create account
+    static void createAccount() {
+
+        System.out.print("Enter account number: ");
+        int accountNumber = sc.nextInt();
+        sc.nextLine();
+
+        // Check if account already exists
+        if (accounts.containsKey(accountNumber)) {
+            System.out.println("Account already exists!");
+            return;
+        }
+
+        System.out.print("Enter account holder name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter initial deposit: ");
+        double balance = sc.nextDouble();
+
+        if (balance < 0) {
+            System.out.println("Invalid initial deposit.");
+            return;
+        }
+
+        BankAccount account =
+                new SavingsAccount(accountNumber, name, balance);
+
+        // Add account to HashMap
+        accounts.put(accountNumber, account);
+
+        System.out.println("Account created successfully!");
+    }
+
+    // Deposit money
+    static void depositMoney() {
+
+        System.out.print("Enter account number: ");
+        int accountNumber = sc.nextInt();
+
+        // Find account using HashMap
+        BankAccount account = accounts.get(accountNumber);
+
+        if (account == null) {
+            System.out.println("Account not found!");
+            return;
+        }
+
+        System.out.print("Enter amount to deposit: ");
+        double amount = sc.nextDouble();
+
+        account.deposit(amount);
+    }
+
+    // Withdraw money
+    static void withdrawMoney() {
+
+        System.out.print("Enter account number: ");
+        int accountNumber = sc.nextInt();
+
+        // Find account using HashMap
+        BankAccount account = accounts.get(accountNumber);
+
+        if (account == null) {
+            System.out.println("Account not found!");
+            return;
+        }
+
+        System.out.print("Enter amount to withdraw: ");
+        double amount = sc.nextDouble();
+
+        account.withdraw(amount);
+    }
+
+    // Check balance
+    static void checkBalance() {
+
+        System.out.print("Enter account number: ");
+        int accountNumber = sc.nextInt();
+
+        // Find account using HashMap
+        BankAccount account = accounts.get(accountNumber);
+
+        if (account == null) {
+            System.out.println("Account not found!");
+        } else {
+            System.out.println("Account Holder : " + account.name);
+            System.out.println("Balance        : Rs. " + account.balance);
+        }
+    }
+
+    // Display all accounts
+    static void displayAllAccounts() {
+
+        if (accounts.isEmpty()) {
+            System.out.println("No accounts available.");
+            return;
+        }
+
+        System.out.println("\n===== ALL ACCOUNTS =====");
+
+        // Iterate through HashMap values
+        for (BankAccount account : accounts.values()) {
+            account.display();
+        }
+    }
+
+    // Main method
+    public static void main(String[] args) {
+
+        int choice;
+
+        do {
+            System.out.println("\n=================================");
+            System.out.println("    BANKING MANAGEMENT SYSTEM");
+            System.out.println("=================================");
+            System.out.println("1. Create Account");
+            System.out.println("2. Deposit Money");
+            System.out.println("3. Withdraw Money");
+            System.out.println("4. Check Balance");
+            System.out.println("5. Display All Accounts");
+            System.out.println("6. Exit");
+            System.out.println("=================================");
+
+            System.out.print("Enter your choice: ");
+            choice = sc.nextInt();
+
+            switch (choice) {
+
+                case 1:
+                    createAccount();
+                    break;
+
+                case 2:
+                    depositMoney();
+                    break;
+
+                case 3:
+                    withdrawMoney();
+                    break;
+
+                case 4:
+                    checkBalance();
+                    break;
+
+                case 5:
+                    displayAllAccounts();
+                    break;
+
+                case 6:
+                    System.out.println("Thank you for using the Banking Management System!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+
+        } while (choice != 6);
+
+        sc.close();
+    }
+}
